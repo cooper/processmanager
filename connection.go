@@ -8,6 +8,7 @@ import (
 )
 
 var currentId int = 0
+var connections = make(map[int]*connection)
 
 type connection struct {
 	conn     net.Conn
@@ -31,13 +32,18 @@ func newConnection(conn net.Conn) *connection {
 
 // read data from a connection
 func (conn *connection) readData() {
+
+	// loop
 	for {
 		line, _, err := conn.incoming.ReadLine()
 		if err != nil {
-			return
+			break
 		}
 		handleEvent(conn, line)
 	}
+
+	// disconnect
+	conn.destroy()
 }
 
 // handle a JSON event
@@ -73,4 +79,11 @@ func (conn *connection) send(command string, params map[string]interface{}) bool
 		return false
 	}
 	return true
+}
+
+// connection ends
+func (conn *connection) destroy() {
+	if conn.process != nil {
+		delete(connections, conn.process.PID())
+	}
 }

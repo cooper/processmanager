@@ -11,6 +11,16 @@ func createEventHandlers() {
 
 // creates a process object for the connected process.
 func registerHandler(conn *connection, name string, params map[string]interface{}) {
-	pid := params["pid"].(float64)
-	conn.process = process.FromPID(int(pid))
+	pid := int(params["pid"].(float64))
+
+	// this process is already registered...
+	if connections[pid] != nil {
+		conn.conn.Close()
+		return
+	}
+
+	conn.process = process.FromPID(pid)
+
+	// store for later
+	connections[pid] = conn
 }
