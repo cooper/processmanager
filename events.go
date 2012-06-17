@@ -12,6 +12,7 @@ func createEventHandlers() {
 // creates a process object for the connected process.
 func registerHandler(conn *connection, name string, params map[string]interface{}) {
 	pid := params["pid"].(int) // int(params["pid"].(float64))
+	delete(params, "pid")
 
 	// this process is already registered...
 	if connections[pid] != nil {
@@ -20,6 +21,11 @@ func registerHandler(conn *connection, name string, params map[string]interface{
 	}
 
 	conn.process = process.SFromPID(pid)
+
+	// assign all of the properties here
+	for prop, value := range params {
+		conn.process.SetProperty(prop, value.(string))
+	}
 
 	// store for later
 	connections[pid] = conn
