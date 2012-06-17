@@ -15,7 +15,7 @@ type connection struct {
 	incoming *bufio.Reader
 	outgoing *bufio.Writer
 	id       int
-	process  *process.Process
+	process  *process.SProcess
 }
 
 // create a new connection
