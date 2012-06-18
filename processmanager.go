@@ -1,12 +1,18 @@
 package ProcessManager
 
 import (
+	"errors"
 	"net"
 	"os"
 )
 
 func Run() (err error) {
 	const path = "/system/socket/ProcessSocket"
+
+	// must run as root
+	if os.Getuid() != 0 {
+		return errors.New("must be run as root")
+	}
 
 	// check if file exists. if so, delete it.
 	if _, err := os.Lstat(path); err == nil {
