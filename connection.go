@@ -11,9 +11,8 @@ var currentId int = 0
 var connections = make(map[int]*connection)
 
 type connection struct {
-	conn     net.Conn
+	socket   net.Conn
 	incoming *bufio.Reader
-	outgoing *bufio.Writer
 	id       int
 	process  *process.SProcess
 }
@@ -22,9 +21,8 @@ type connection struct {
 func newConnection(conn net.Conn) *connection {
 	currentId++
 	newconn := &connection{
-		conn:     conn,
+		socket:   conn,
 		incoming: bufio.NewReader(conn),
-		outgoing: bufio.NewWriter(conn),
 		id:       currentId,
 	}
 	return newconn
@@ -74,7 +72,7 @@ func (conn *connection) send(command string, params map[string]interface{}) bool
 	if err != nil {
 		return false
 	}
-	_, err = conn.outgoing.Write(b)
+	_, err = conn.socket.Write(b)
 	if err != nil {
 		return false
 	}
@@ -85,5 +83,6 @@ func (conn *connection) send(command string, params map[string]interface{}) bool
 func (conn *connection) destroy() {
 	if conn.process != nil {
 		delete(connections, conn.process.PID())
+		process.Free(conn.process)
 	}
 }
