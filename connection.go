@@ -11,14 +11,14 @@ var currentId int = 0
 var connections = make(map[int]*connection)
 
 type connection struct {
-	socket   net.Conn
+	socket   *net.UnixConn
 	incoming *bufio.Reader
 	id       int
 	process  *process.SProcess
 }
 
 // create a new connection
-func newConnection(conn net.Conn) *connection {
+func newConnection(conn *net.UnixConn) *connection {
 	currentId++
 	newconn := &connection{
 		socket:   conn,

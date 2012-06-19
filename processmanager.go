@@ -31,13 +31,16 @@ func Run() (err error) {
 		return err
 	}
 
+	// set permission to 777
+	os.Chmod(path, 0777)
+
 	// create event handlers
 	createEventHandlers()
 
 	// loop for connections
 	for {
 
-		conn, err := listener.Accept()
+		conn, err := listener.AcceptUnix()
 		if err != nil {
 			return err
 		}
