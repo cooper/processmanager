@@ -1,6 +1,9 @@
 package ProcessManager
 
-import "process"
+import (
+	"process"
+	"time"
+)
 
 var eventHandlers = make(map[string]func(conn *connection, name string, params map[string]interface{}))
 
@@ -21,6 +24,7 @@ func registerHandler(conn *connection, name string, params map[string]interface{
 	}
 
 	conn.process = process.SFromPID(pid)
+	conn.process.LastPong = time.Now().UnixNano()
 
 	// assign all of the properties here
 	for prop, value := range params {

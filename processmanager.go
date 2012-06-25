@@ -4,6 +4,9 @@ import (
 	"errors"
 	"net"
 	"os"
+
+//	"syscall"
+//	"unsafe"
 )
 
 func Run() (err error) {
@@ -13,6 +16,8 @@ func Run() (err error) {
 	if os.Getuid() != 0 {
 		return errors.New("must be run as root")
 	}
+
+	//	syscall.RawSyscall(syscall.SYS_PRCTL, syscall.PR_SET_NAME, uintptr(unsafe.Pointer(syscall.StringBytePtr("ProcessManager"))), 0)
 
 	// check if file exists. if so, delete it.
 	if _, err := os.Lstat(path); err == nil {
