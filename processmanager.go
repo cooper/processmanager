@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net"
 	"os"
+	"syscall"
 	"time"
 
-//	"syscall"
 //	"unsafe"
 )
 
@@ -67,11 +67,13 @@ func pingLoop() {
 
 			// this connection has existed for five and has not registered.
 			conn.socket.Close()
+			conn.process.Kill(syscall.SIGKILL)
 
 		} else if conn.process != nil && time.Since(conn.lastPong).Seconds() >= 10 {
 
 			// this connection has not responded to pings for a while.
 			conn.socket.Close()
+			conn.process.Kill(syscall.SIGKILL)
 
 		} else {
 
