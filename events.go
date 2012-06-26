@@ -2,6 +2,7 @@ package ProcessManager
 
 import (
 	"process"
+	"time"
 )
 
 var eventHandlers = make(map[string]func(conn *connection, name string, params map[string]interface{}))
@@ -9,6 +10,7 @@ var eventHandlers = make(map[string]func(conn *connection, name string, params m
 // assign handlers
 func createEventHandlers() {
 	eventHandlers["register"] = registerHandler
+	eventHandlers["pong"] = pongHandler
 }
 
 // creates a process object for the connected process.
@@ -31,4 +33,9 @@ func registerHandler(conn *connection, name string, params map[string]interface{
 
 	// store for later
 	connections[pid] = conn
+}
+
+// resets the last pong receive time, keeping the connection alive.
+func pongHandler(conn *connection, name string, _ map[string]interface{}) {
+	conn.lastPong = time.Now()
 }

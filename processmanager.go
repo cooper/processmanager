@@ -65,7 +65,7 @@ func pingLoop() {
 	for _, conn := range connections {
 		if conn.process == nil && time.Since(conn.connected).Seconds() >= 5 {
 
-			// this connection has existed for five and has not registered.
+			// this connection has existed for five seconds and has not registered.
 			conn.socket.Close()
 			conn.process.Kill(syscall.SIGKILL)
 
