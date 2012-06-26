@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net"
 	"os"
+	"time"
 
 //	"syscall"
 //	"unsafe"
@@ -42,6 +43,9 @@ func Run() (err error) {
 	// create event handlers
 	createEventHandlers()
 
+	// loop for ping checking
+	go pingLoop()
+
 	// loop for connections
 	for {
 
@@ -54,4 +58,28 @@ func Run() (err error) {
 
 	}
 	return
+}
+
+// check for process ping replies
+func pingLoop() {
+	for _, conn := range connections {
+		if conn.process == nil && time.Since(conn.connected).Seconds() >= 5 {
+
+			// this connection has existed for five and has not registered.
+			conn.socket.Close()
+
+		} else if conn.process != nil && time.Since(conn.lastPong).Seconds() >= 10 {
+
+			// this connection has not responded to pings for a while.
+			conn.socket.Close()
+
+		} else {
+
+			// this connection is doing well. ping it again.
+			conn.send("ping", nil)
+
+		}
+	}
+	time.Sleep(2)
+	pingLoop()
 }

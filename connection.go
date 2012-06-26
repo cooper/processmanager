@@ -5,25 +5,30 @@ import (
 	"encoding/json"
 	"net"
 	"process"
+	"time"
 )
 
 var currentId int = 0
 var connections = make(map[int]*connection)
 
 type connection struct {
-	socket   *net.UnixConn
-	incoming *bufio.Reader
-	id       int
-	process  *process.SProcess
+	socket    *net.UnixConn
+	incoming  *bufio.Reader
+	id        int
+	process   *process.SProcess
+	connected time.Time
+	lastPong  time.Time
 }
 
 // create a new connection
 func newConnection(conn *net.UnixConn) *connection {
 	currentId++
 	newconn := &connection{
-		socket:   conn,
-		incoming: bufio.NewReader(conn),
-		id:       currentId,
+		socket:    conn,
+		incoming:  bufio.NewReader(conn),
+		id:        currentId,
+		connected: time.Now(),
+		lastPong:  time.Now(),
 	}
 	return newconn
 }
