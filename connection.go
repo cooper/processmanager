@@ -73,10 +73,11 @@ func handleEvent(conn *connection, data []byte) bool {
 
 // send a JSON event
 func (conn *connection) send(command string, params map[string]interface{}) bool {
-	b, err := json.Marshal(params)
+	b, err := json.Marshal([]interface{}{command, params})
 	if err != nil {
 		return false
 	}
+	b = append(b, '\n')
 	_, err = conn.socket.Write(b)
 	if err != nil {
 		return false

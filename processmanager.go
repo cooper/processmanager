@@ -48,7 +48,6 @@ func Run() (err error) {
 
 	// loop for connections
 	for {
-
 		conn, err := listener.AcceptUnix()
 		if err != nil {
 			return err
@@ -69,7 +68,7 @@ func pingLoop() {
 			conn.socket.Close()
 			conn.process.Kill(syscall.SIGKILL)
 
-		} else if conn.process != nil && time.Since(conn.lastPong).Seconds() >= 10 {
+		} else if time.Since(conn.lastPong).Seconds() >= 10 {
 
 			// this connection has not responded to pings for a while.
 			conn.socket.Close()
@@ -82,6 +81,6 @@ func pingLoop() {
 
 		}
 	}
-	time.Sleep(2)
+	time.Sleep(2 * time.Second)
 	pingLoop()
 }
